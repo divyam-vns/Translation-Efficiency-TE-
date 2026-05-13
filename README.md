@@ -7,27 +7,25 @@ This repository provides a ready-to-run, reproducible pipeline for computing Tra
 | *Myc coordinates transcription and translation* (EMBO J 2016)     | **GSE66929** | PMC4687422 | Contains Ribo-seq (elongating footprints) + RNA-seq |
 | *c-MYC regulates mRNA translation efficiency* (Cell Reports 2019) | **GSE79864** | PMC6605752 | Contains Ribo-seq + RNA-seq                         |
 
-
 This pipeline harmonizes both studies so their data can be processed identically for TE analysis.
 
+---
 ## 1. Overview
 
 This pipeline performs:
 
-### 1. SRA download (Ribo-seq + RNA-seq)
-### 2. Adapter trimming
-### 3. Removal of rRNA reads
-### 4. Genome alignment (STAR)
-### 5. Footprint counting (featureCounts)
-### 6. Translation efficiency calculation (RiboRex)
-### 7. QC + plot generation
-
-All steps are completely automated.
+ 1. SRA download (Ribo-seq + RNA-seq)
+ 2. Adapter trimming
+ 3. Removal of rRNA reads
+ 4. Genome alignment (STAR)
+ 5. Footprint counting (featureCounts)
+ 6. Translation efficiency calculation (RiboRex)
+ 7. QC + plot generation
 
 ## 2. Dataset Accession List
 **GSE66929 – EMBO J (2016)**
-
 **Ribo-seq (elongating footprints):**
+
 ````
 SRR2920474  
 SRR2920475  
@@ -78,17 +76,14 @@ TE-Pipeline/
     ├── rRNA.fa
     └── STAR_index/
 ````
-
-The scripts in the ZIP are placeholders unless you specifically request that I regenerate them with the full executable code from the canvas.
-
 ## 4. Installation
 **Install Conda environment**
 ````
 conda env create -f env/environment.yml
 conda activate te-env
 ````
-**Required tools (auto-installed via environment):**
-
+**Required tools:**
+---
 - sra-tools
 - cutadapt
 - bowtie2
@@ -100,34 +95,30 @@ conda activate te-env
 - R (tidyverse, DESeq2, RiboRex)
 
 ## 5. Running the Pipeline
-**Step 1 — Download SRA files**
 ````
+# Step 1 — Download SRA files
 bash scripts/01_download_data.sh
-````
-**Step 2 — Trim adapters**
-````
+
+# Step 2 — Trim adapters
 bash scripts/02_trim.sh
-````
-**Step 3 — Remove rRNA**
-````
+
+# Step 3 — Remove rRNA
 bash scripts/03_remove_rRNA.sh
-````
-**Step 4 — Align to genome (STAR)**
-````
+
+# Step 4 — Align to genome (STAR)
 bash scripts/04_align.sh
-````
-**Step 5 — Count footprints + RNA**
-````
+
+# Step 5 — Count footprints + RNA
 bash scripts/05_count_footprints.sh
+
+# Step 6 — Calculate translation efficiency
+scripts/06_calculate_TE.R
+
+# Step 7 — QC + plots
+scripts/07_qc.R
+
 ````
-**Step 6 — Calculate translation efficiency**
-````
-Rscript scripts/06_calculate_TE.R
-````
-**Step 7 — QC + plots**
-````
-Rscript scripts/07_qc.R
-````
+--- 
 ## 6. Output Files
 ````
 | Output                | Description                                                           |
@@ -136,27 +127,21 @@ Rscript scripts/07_qc.R
 | **TE_volcano.png**    | Volcano plot of differential TE                                       |
 | **Aligned BAM files** | STAR-aligned Ribo-seq and RNA-seq                                     |
 | **Count matrices**    | featureCounts output                                                  |
-
 ````
 ## 7. Notes on Harmonization of the Two Studies
 
 **Both studies used:**
 
 - Ribo-seq protocol isolating ~28–32 nt elongating ribosome footprints
-
 - RNA-seq using rRNA-depleted libraries
-
 - mRNA libraries compatible with TE calculation
-
 - Mammalian (mouse/human) genome references
 
 **Therefore, combining them for uniform TE analysis is valid if:**
 
-- you normalize by condition
-
+- normalized by condition
 - process both with identical tools (as done here)
-
-- evaluate batch effects (optional: add DESeq2 batch term)
+- batch effects evaluated
 
 ## 8. Citation
 
